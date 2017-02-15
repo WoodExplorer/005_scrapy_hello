@@ -49,3 +49,6 @@ Temporary Items
 .pyc
 *.pyc
 tutorial/tutorial/spiders/ml-100k
+tutorial/tutorial/archive
+tutorial/tutorial/plot_summary-*.txt
+tutorial/tutorial/synopsis-*.txt

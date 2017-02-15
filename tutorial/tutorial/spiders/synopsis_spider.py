@@ -3,7 +3,7 @@
 import scrapy
 import os
 import codecs
-
+import sqlite3
 
 class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
     """ This spider will:
@@ -15,6 +15,7 @@ class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
             pages and save longest plot summaries as substitute.
     """
     name = "synopsis"
+    cx = sqlite3.connect(os.path.join('spiders', 'my_db.db'))
 
     def start_requests(self):
 
@@ -27,23 +28,36 @@ class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
         input_file = os.path.join('spiders', 'ml-100k-imdb-urls.txt')
         delimiter = '|'
 
-        urls = []
+        tuples = []
         with open(input_file , 'r') as f:
             #first_line = f.readline()
             for i, line in enumerate(f):
                 pieces = line.split(delimiter)
+                item_id = pieces[0].strip()
                 url = pieces[1].strip() # hard-coded
 
-                urls.append(url)
+                tuples.append((item_id, url))
 
         # 
-        limit = 5
-        for i, url in enumerate(urls):
-            if i > limit:
-                break
-            yield scrapy.Request(url=url, callback=self.parse)
+        #limit = 5
+        #limit = 500000
+        cnt = 0
+        cur = self.cx.cursor()
+        for i, (item_id, url) in enumerate(tuples):
+            #if cnt > limit:
+            #if i > limit:
+            #    break
 
-    def parse(self, response):
+            cur.execute('select count(*) from item2page where item_id = "%s"' % (item_id))
+            r = cur.fetchone()
+            if 1 == r[0]:
+                pass
+            else:
+                yield scrapy.Request(url=url, callback=lambda response, item_id=item_id:self.parse(response, item_id))
+                cnt += 1
+        cur.close()
+
+    def parse(self, response, item_id):
         signal_page_id_list_empty = 0
         signal_page_id_list_too_big = 0
 
@@ -60,9 +74,17 @@ class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
         url_for_synopsis_template = "http://www.imdb.com/title/%s/synopsis"
         url_for_synopsis = url_for_synopsis_template % page_id
 
-        yield scrapy.Request(url=url_for_synopsis, callback=lambda response, pageid=page_id: self.parse_synopsis_page(response, page_id))
+        #
+        cur = self.cx.cursor()
+        #cur.execute("insert or replace into item2page (item_id, page_id) values ('%s', '%s');" % (item_id, page_id))
+        cur.execute("insert into item2page (item_id, page_id) values ('%s', '%s');" % (item_id, page_id))
+        self.cx.commit()
+        cur.close()
+        #
 
-    def parse_synopsis_page(self, response, page_id):
+        yield scrapy.Request(url=url_for_synopsis, callback=lambda response, item_id=item_id, pageid=page_id: self.parse_synopsis_page(response, item_id, page_id))
+
+    def parse_synopsis_page(self, response, item_id, page_id):
         signal_synopsis_list_empty = 0
         signal_synopsis_list_too_big = 0
 
@@ -84,10 +106,10 @@ class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
         if 10 >= len(synopsis):
             url_for_plot_summary_template = 'http://www.imdb.com/title/%s/plotsummary'
             url_for_plot_summary = url_for_plot_summary_template % page_id
-            yield scrapy.Request(url=url_for_plot_summary, callback=lambda response, pageid=page_id: self.parse_plot_summary_page(response, page_id))
+            yield scrapy.Request(url=url_for_plot_summary, callback=lambda response, item_id=item_id, pageid=page_id: self.parse_plot_summary_page(response, item_id, page_id))
             return
 
-        filename = 'synopsis-%s.txt' % page_id
+        filename = 'synopsis-%s-%s.txt' % (item_id, page_id)
         #with open(filename, 'wb') as f:
         #    f.write(synopsis)
         f = codecs.open(filename, "wb", "utf-8")
@@ -96,7 +118,7 @@ class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
 
         self.log('Saved file %s' % filename)
 
-    def parse_plot_summary_page(self, response, page_id):
+    def parse_plot_summary_page(self, response, item_id, page_id):
         signal_plot_summary_list_empty = 0
         signal_plot_summary_list_too_big = 0
 
@@ -120,7 +142,7 @@ class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
         plot_summary = plot_summary_list[0]
 
         #
-        filename = 'plot_summary-%s.txt' % page_id
+        filename = 'plot_summary-%s-%s.txt' % (item_id, page_id)
         #with open(filename, 'wb') as f:
         #    f.write(synopsis)
         f = codecs.open(filename, "wb", "utf-8")
