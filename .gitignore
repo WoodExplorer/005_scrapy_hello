@@ -48,3 +48,4 @@ Temporary Items
 
 .pyc
 tutorial\tutorial\spiders\ml-100k
+*.pyc
