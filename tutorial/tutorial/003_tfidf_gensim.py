@@ -45,8 +45,8 @@ pprint(texts)
 # ['graph', 'minors', 'survey']]
 
 
-dictionary = corpora.Dictionary()
-dictionary.save('/deerwester.dict')  # store the dictionary, for future reference
+dictionary = corpora.Dictionary(texts)
+dictionary.save('deerwester.dict')  # store the dictionary, for future reference
 print(dictionary)
 
 print(dictionary.token2id)
