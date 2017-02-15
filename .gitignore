@@ -47,5 +47,5 @@ Temporary Items
 .apdisk
 
 .pyc
-tutorial\tutorial\spiders\ml-100k
 *.pyc
+tutorial/tutorial/spiders/ml-100k
