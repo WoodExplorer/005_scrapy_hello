@@ -36,21 +36,27 @@ class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
                 item_id = pieces[0].strip()
                 url = pieces[1].strip() # hard-coded
 
+                if len(url) < 2:
+                    continue
+
                 tuples.append((item_id, url))
 
+        self.log('len(tuples): %d' % len(tuples))
         # 
         #limit = 5
-        #limit = 500000
+        limit = 500000
         cnt = 0
         cur = self.cx.cursor()
+        #tuples = [('385', 'http://us.imdb.com/M/title-exact?True%20Lies%20(1994)')]
         for i, (item_id, url) in enumerate(tuples):
-            #if cnt > limit:
+            if cnt > limit:
             #if i > limit:
-            #    break
+                break
 
             cur.execute('select count(*) from item2page where item_id = "%s"' % (item_id))
             r = cur.fetchone()
             if 1 == r[0]:
+                self.log('pass item_id:%s' % (item_id))
                 pass
             else:
                 yield scrapy.Request(url=url, callback=lambda response, item_id=item_id:self.parse(response, item_id))
