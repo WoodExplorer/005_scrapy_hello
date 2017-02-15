@@ -44,21 +44,22 @@ class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
         self.log('len(tuples): %d' % len(tuples))
         # 
         #limit = 5
-        limit = 500000
+        limit = 50000000
         cnt = 0
         cur = self.cx.cursor()
-        #tuples = [('385', 'http://us.imdb.com/M/title-exact?True%20Lies%20(1994)')]
+        #tuples = [('1003', 'http://us.imdb.com/M/title-exact?That%20Darn%20Cat%20(1997)')]
         for i, (item_id, url) in enumerate(tuples):
             if cnt > limit:
             #if i > limit:
                 break
 
-            cur.execute('select count(*) from item2page where item_id = "%s"' % (item_id))
+            cur.execute('select count(*) from item2page where item_id = %s' % (item_id))
             r = cur.fetchone()
             if 1 == r[0]:
                 self.log('pass item_id:%s' % (item_id))
                 pass
             else:
+                self.log('processing item_id:%s' % (item_id))
                 yield scrapy.Request(url=url, callback=lambda response, item_id=item_id:self.parse(response, item_id))
                 cnt += 1
         cur.close()
@@ -83,7 +84,7 @@ class SynopsisOrLongestPlotSummarySpider(scrapy.Spider):
         #
         cur = self.cx.cursor()
         #cur.execute("insert or replace into item2page (item_id, page_id) values ('%s', '%s');" % (item_id, page_id))
-        cur.execute("insert into item2page (item_id, page_id) values ('%s', '%s');" % (item_id, page_id))
+        cur.execute("insert into item2page (item_id, page_id) values (%s, '%s');" % (item_id, page_id))
         self.cx.commit()
         cur.close()
         #
