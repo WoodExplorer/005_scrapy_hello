@@ -61,6 +61,7 @@ sims = index[tfidf[new_vec]]
 print(list(enumerate(sims)))
 
 
+# check correctness
 #>>> a1 = 0.7071067811865476
 #>>> a0 = 0.7071067811865476
 #>>> b0, b1, b2 = 0.5773502691896257,  0.5773502691896257, 0.5773502691896257
