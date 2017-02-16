@@ -45,11 +45,32 @@ pprint(texts)
 # ['graph', 'minors', 'survey']]
 
 
-dictionary = corpora.Dictionary(texts)
+# memory-efficient dictionary construction
+from six import iteritems
+# collect statistics about all tokens
+dictionary = corpora.Dictionary(line.lower().split() for line in open('mycorpus.txt'))
+# remove stop words and words that appear only once
+stop_ids = [dictionary.token2id[stopword] for stopword in stoplist
+            if stopword in dictionary.token2id]
+once_ids = [tokenid for tokenid, docfreq in iteritems(dictionary.dfs) if docfreq == 1]
+dictionary.filter_tokens(stop_ids + once_ids)  # remove stop words and words that appear only once
+#dictionary.compactify()  # remove gaps in id sequence after words that were removed
 dictionary.save('deerwester.dict')  # store the dictionary, for future reference
 print(dictionary)
-
 print(dictionary.token2id)
+# END
+
+class MyCorpus(object):
+       def __iter__(self):
+           for line in open('mycorpus.txt'):
+               # assume there's one document per line, tokens separated by whitespace
+               yield dictionary.doc2bow(line.lower().split())
+
+corpus_memory_friendly = MyCorpus()  # doesn't load the corpus into memory!
+print(corpus_memory_friendly)
+
+for vector in corpus_memory_friendly:  # load one vector into memory at a time
+     print(vector)
 
 
 # To actually convert tokenized documents to vectors:
