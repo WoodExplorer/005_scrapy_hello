@@ -16,3 +16,31 @@ titantic
 [(388, 0.24566919), (414, 0.18407047), (259, 0.17995946), (197, 0.14466901), (298, 0.11491678), (382, 0.11014947), (224, 0.094685987), (81, 0.089867659), (177, 0.085833251), (84, 0.083224788)]
 [('synopsis-1273-tt0109456.txt', 0.24566919), ('synopsis-340-tt0118749.txt', 0.18407047), ('synopsis-736-tt0108101.txt', 0.17995946), ('synopsis-707-tt0101811.txt', 0.14466901), ('synopsis-391-tt0107362.txt', 0.11491678), ('synopsis-327-tt0118887.txt', 0.11014947), ('synopsis-583-tt0107983.txt', 0.094685987), ('synopsis-66-tt0114924.txt', 0.089867659), ('synopsis-522-tt0090967.txt', 0.085833251), ('synopsis-175-tt0088846.txt', 0.083224788)]
 
+---
+
+trying to carry out the other aspect of exp_chap2_1: qualitative evaluation of neural representation of items
+
+given following hyper-parameters:
+    rs.setup({'data': train, 
+        'model_name': 'main_model',
+        'num_features': 200,
+        'min_count': 5,
+        'window': 2,
+        'K': K,
+    })
+
+evaluation result:
+	metrics: {'recall': 0.0748502994011976, 'precision': 0.15714285714285714}
+
+saved:
+	2017-02-16 16:12:30,746 : INFO : saved main_modelnum_features=200_min_count=5_window=2.model
+
+python snippet to explore most-similar items:
+	>>> import gensim
+	>>> model = gensim.models.Word2Vec.load('/home/wsyj/dissertation__recommendation_system__experiment_2/dissertation__recommendation_system__experiment/main_modelnum_features=200_min_count=5_window=2.model' )
+	>>> 
+	>>> m = model
+	>>> m.most_similar('318')
+	[('188', 0.9998799562454224), ('8', 0.9998798966407776), ('651', 0.9998780488967896), ('209', 0.9998772740364075), ('131', 0.999876081943512), ('47', 0.9998757839202881), ('175', 0.9998754858970642), ('56', 0.9998741149902344), ('510', 0.9998735785484314), ('180', 0.9998733401298523)]
+
+
