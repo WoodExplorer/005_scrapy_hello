@@ -48,9 +48,13 @@ Temporary Items
 
 .pyc
 *.pyc
+tutorial/tutorial/movie_description_100K_backup
+tutorial/tutorial/movie_description_100K
+tutorial/tutorial/movie_description_1M_backup
+tutorial/tutorial/movie_description_1M
+tutorial/tutorial/spiders/tmp_find_out_why.py
+tutorial/tutorial/spiders/ml-1m
 tutorial/tutorial/spiders/ml-100k
 tutorial/tutorial/archive
 tutorial/tutorial/plot_summary-*.txt
 tutorial/tutorial/synopsis-*.txt
-tutorial/tutorial/movie_description_backup
-tutorial/tutorial/movie_description

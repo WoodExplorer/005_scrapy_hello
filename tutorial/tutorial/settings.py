@@ -70,7 +70,7 @@ NEWSPIDER_MODULE = 'tutorial.spiders'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
-AUTOTHROTTLE_ENABLED = False
+AUTOTHROTTLE_ENABLED = True
 # The initial download delay
 #AUTOTHROTTLE_START_DELAY = 5
 AUTOTHROTTLE_START_DELAY = 0
@@ -79,7 +79,7 @@ AUTOTHROTTLE_START_DELAY = 0
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
 #AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-AUTOTHROTTLE_TARGET_CONCURRENCY = 2.0
+AUTOTHROTTLE_TARGET_CONCURRENCY = 0.5
 # Enable showing throttling stats for every response received:
 #AUTOTHROTTLE_DEBUG = False
 AUTOTHROTTLE_DEBUG = True
