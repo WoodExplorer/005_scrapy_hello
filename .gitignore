@@ -54,3 +54,9 @@ tutorial/tutorial/plot_summary-*.txt
 tutorial/tutorial/synopsis-*.txt
 tutorial/tutorial/movie_description_backup
 tutorial/tutorial/movie_description
+
+*.dict
+*.mm
+*.index
+*.*~
+*~
